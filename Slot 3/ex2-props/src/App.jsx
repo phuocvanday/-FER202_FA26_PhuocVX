@@ -12,8 +12,18 @@ function App() {
           tag="Mới"
           image="/image/iphone15prm.jpg"
         />
-        <ProductInfo Name="MacBook Air M3" Price={27990000} tag="Bán chạy" />
-        <ProductInfo Name="AirPods Pro 2" Price={5990000} tag="Giảm giá" />
+        <ProductInfo
+          Name="MacBook Air M3"
+          Price={27990000}
+          tag="Bán chạy"
+          image="/image/macbookair3.jpg"
+        />
+        <ProductInfo
+          Name="AirPods Pro 2"
+          Price={5990000}
+          tag="Giảm giá"
+          image="/image/airpodpro2.jpg"
+        />
       </div>
     </div>
   )
