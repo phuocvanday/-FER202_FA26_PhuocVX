@@ -4,6 +4,8 @@ import Col from 'react-bootstrap/Col'
 import WelcomeCard from './components/WelcomeCard'
 import StudentCard from './components/StudentCard'
 import ProductCard from './components/ProductCard'
+import ProductList from './components/ProductList'
+import { products } from './data/products'
 import taiNgheImg from './assets/products/tainghe-bluetooth.png'
 import chuotImg from './assets/products/chuot-khong-day.png'
 import './App.css'
@@ -73,6 +75,10 @@ function App() {
           <ProductCard product={productC} />
         </Col>
       </Row>
+
+      <div className="mt-5">
+        <ProductList products={products} />
+      </div>
     </div>
   )
 }
