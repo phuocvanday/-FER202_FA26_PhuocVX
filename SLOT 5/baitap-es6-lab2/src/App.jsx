@@ -2,14 +2,17 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
-import WelcomeCard from './components/WelcomeCard'
-import StudentCard from './components/StudentCard'
-import ProductCard from './components/ProductCard'
-import ProductList from './components/ProductList'
-import AppButton from './components/AppButton'
-import InputField from './components/InputField'
-import CartTable from './components/CartTable'
-import RegisterForm from './components/RegisterForm'
+import {
+  Layout,
+  WelcomeCard,
+  StudentCard,
+  ProductCard,
+  ProductList,
+  AppButton,
+  InputField,
+  CartTable,
+  RegisterForm,
+} from './components'
 import { products } from './data/products'
 import taiNgheImg from './assets/products/tainghe-bluetooth.png'
 import chuotImg from './assets/products/chuot-khong-day.png'
@@ -61,7 +64,6 @@ const productB = {
 }
 const productC = { id: 3 }
 
-// Bài 6: spread object / mảng / style
 const product = products[0]
 const saleProducts = products.slice(0, 2)
 const newProducts = products.slice(6)
@@ -71,69 +73,71 @@ const highlight = { border: '2px solid gold' }
 
 function App() {
   return (
-    <div className="container my-4">
-      <WelcomeCard />
-
-      <div className="d-flex gap-3 flex-wrap mt-4">
-        <StudentCard student={student1} />
-        <StudentCard student={student2} />
-        <StudentCard student={student3} />
-      </div>
-
-      <Row className="mt-4 g-4">
-        <Col md={4}>
-          <ProductCard product={productA} />
-        </Col>
-        <Col md={4}>
-          <ProductCard product={productB} />
-        </Col>
-        <Col md={4}>
-          <ProductCard product={productC} />
-        </Col>
-      </Row>
-
-      <div className="mt-5">
-        <ProductList products={products} />
-      </div>
-
-      {/* Bài 6: rest / spread — không dùng tiêu đề demo dài */}
-      <Card className="mt-5 p-4" style={{ ...baseStyle, ...highlight }}>
-        <div className="d-flex flex-wrap gap-2 mb-3">
-          <AppButton>Mặc định</AppButton>
-          <AppButton variant="danger" size="sm">
-            Xóa
-          </AppButton>
-          <AppButton disabled>Không khả dụng</AppButton>
+    <Layout title="Cửa hàng">
+      <section id="home">
+        <WelcomeCard />
+        <div className="d-flex gap-3 flex-wrap mt-4">
+          <StudentCard student={student1} />
+          <StudentCard student={student2} />
+          <StudentCard student={student3} />
         </div>
+      </section>
 
-        <InputField
-          id="contactEmail"
-          label="Email"
-          type="email"
-          placeholder="name@example.com"
-          required
-          helpText="Chúng tôi không chia sẻ email của bạn"
-        />
-
-        <Row className="g-4 mt-1">
+      <section id="products" className="mt-5">
+        <Row className="g-4">
           <Col md={4}>
-            <ProductCard product={{ ...product, discount: 30 }} />
+            <ProductCard product={productA} />
+          </Col>
+          <Col md={4}>
+            <ProductCard product={productB} />
+          </Col>
+          <Col md={4}>
+            <ProductCard product={productC} />
           </Col>
         </Row>
-      </Card>
 
-      <div className="mt-5">
-        <ProductList products={featured} />
-      </div>
+        <div className="mt-5">
+          <ProductList products={products} />
+        </div>
 
-      <div className="mt-5">
+        <Card className="mt-5 p-4" style={{ ...baseStyle, ...highlight }}>
+          <div className="d-flex flex-wrap gap-2 mb-3">
+            <AppButton>Mặc định</AppButton>
+            <AppButton variant="danger" size="sm">
+              Xóa
+            </AppButton>
+            <AppButton disabled>Không khả dụng</AppButton>
+          </div>
+
+          <InputField
+            id="contactEmail"
+            label="Email"
+            type="email"
+            placeholder="name@example.com"
+            required
+            helpText="Chúng tôi không chia sẻ email của bạn"
+          />
+
+          <Row className="g-4 mt-1">
+            <Col md={4}>
+              <ProductCard product={{ ...product, discount: 30 }} />
+            </Col>
+          </Row>
+        </Card>
+
+        <div className="mt-5">
+          <ProductList products={featured} />
+        </div>
+      </section>
+
+      <section id="cart" className="mt-5">
         <CartTable />
-      </div>
+      </section>
 
-      <div className="mt-5">
+      <section id="register" className="mt-5">
         <RegisterForm />
-      </div>
-    </div>
+      </section>
+    </Layout>
   )
 }
 
