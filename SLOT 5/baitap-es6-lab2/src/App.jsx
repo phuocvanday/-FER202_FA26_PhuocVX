@@ -1,6 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 import WelcomeCard from './components/WelcomeCard'
 import StudentCard from './components/StudentCard'
+import ProductCard from './components/ProductCard'
+import taiNgheImg from './assets/products/tainghe-bluetooth.png'
+import chuotImg from './assets/products/chuot-khong-day.png'
 import './App.css'
 
 const student1 = {
@@ -30,6 +35,22 @@ const student3 = {
   contact: { email: 'cuong.lm@fpt.edu.vn', phone: '0903 456 789' },
 }
 
+const productA = {
+  id: 1,
+  name: 'Tai nghe Bluetooth',
+  price: 590000,
+  image: taiNgheImg,
+  rating: { rate: 4.5, count: 120 },
+  category: { name: 'Âm thanh' },
+}
+const productB = {
+  id: 2,
+  name: 'Chuột không dây',
+  price: 0,
+  image: chuotImg,
+}
+const productC = { id: 3 }
+
 function App() {
   return (
     <div className="container my-4">
@@ -40,6 +61,18 @@ function App() {
         <StudentCard student={student2} />
         <StudentCard student={student3} />
       </div>
+
+      <Row className="mt-4 g-4">
+        <Col md={4}>
+          <ProductCard product={productA} />
+        </Col>
+        <Col md={4}>
+          <ProductCard product={productB} />
+        </Col>
+        <Col md={4}>
+          <ProductCard product={productC} />
+        </Col>
+      </Row>
     </div>
   )
 }
