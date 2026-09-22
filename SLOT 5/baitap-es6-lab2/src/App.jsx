@@ -44,12 +44,15 @@ const productA = {
   image: taiNgheImg,
   rating: { rate: 4.5, count: 120 },
   category: { name: 'Âm thanh' },
+  inStock: true,
+  discount: 10,
 }
 const productB = {
   id: 2,
   name: 'Chuột không dây',
   price: 0,
   image: chuotImg,
+  inStock: true,
 }
 const productC = { id: 3 }
 
