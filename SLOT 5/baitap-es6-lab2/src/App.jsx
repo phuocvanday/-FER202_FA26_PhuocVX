@@ -8,6 +8,7 @@ import ProductCard from './components/ProductCard'
 import ProductList from './components/ProductList'
 import AppButton from './components/AppButton'
 import InputField from './components/InputField'
+import CartTable from './components/CartTable'
 import { products } from './data/products'
 import taiNgheImg from './assets/products/tainghe-bluetooth.png'
 import chuotImg from './assets/products/chuot-khong-day.png'
@@ -122,6 +123,10 @@ function App() {
 
       <div className="mt-5">
         <ProductList products={featured} />
+      </div>
+
+      <div className="mt-5">
+        <CartTable />
       </div>
     </div>
   )
