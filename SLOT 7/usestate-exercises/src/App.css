@@ -9,6 +9,11 @@
   font-size: 2.5rem;
 }
 
+.color-box {
+  width: 160px;
+  height: 160px;
+}
+
 .todo-panel {
   padding: 1rem;
   border-radius: 8px;

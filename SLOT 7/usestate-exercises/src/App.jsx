@@ -3,6 +3,7 @@ import Counter from './components/Counter'
 import ControlledInput from './components/ControlledInput'
 import ToggleVisibility from './components/ToggleVisibility'
 import TodoList from './components/TodoList'
+import ColorSwitcher from './components/ColorSwitcher'
 import './App.css'
 
 function App() {
@@ -28,6 +29,11 @@ function App() {
       <section className="mb-5">
         <h2 className="h4 mb-3">Exercise 4: Todo List</h2>
         <TodoList />
+      </section>
+
+      <section className="mb-5">
+        <h2 className="h4 mb-3">Exercise 5: Color Switcher</h2>
+        <ColorSwitcher />
       </section>
     </Container>
   )
