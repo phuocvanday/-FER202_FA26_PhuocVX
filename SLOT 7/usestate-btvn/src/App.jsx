@@ -1,6 +1,7 @@
 import Container from "react-bootstrap/Container";
 import FaqAccordion from "./usestate/FaqAccordion";
 import ReviewForm from "./usestate/ReviewForm";
+import BmiCalculator from "./usestate/BmiCalculator";
 import "./App.css";
 
 function App() {
@@ -16,6 +17,11 @@ function App() {
       <section className="mb-5">
         <h2 className="h4 mb-3">Bài 2: Đánh giá sao</h2>
         <ReviewForm />
+      </section>
+
+      <section className="mb-5">
+        <h2 className="h4 mb-3">Bài 3: Máy tính BMI</h2>
+        <BmiCalculator />
       </section>
     </Container>
   );
