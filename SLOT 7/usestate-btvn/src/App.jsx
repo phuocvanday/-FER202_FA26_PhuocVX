@@ -1,5 +1,6 @@
 import Container from "react-bootstrap/Container";
 import FaqAccordion from "./usestate/FaqAccordion";
+import ReviewForm from "./usestate/ReviewForm";
 import "./App.css";
 
 function App() {
@@ -10,6 +11,11 @@ function App() {
       <section className="mb-5">
         <h2 className="h4 mb-3">Bài 1: FAQ Accordion</h2>
         <FaqAccordion />
+      </section>
+
+      <section className="mb-5">
+        <h2 className="h4 mb-3">Bài 2: Đánh giá sao</h2>
+        <ReviewForm />
       </section>
     </Container>
   );
