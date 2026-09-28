@@ -8,3 +8,10 @@
 .exercise-output {
   font-size: 2.5rem;
 }
+
+.todo-panel {
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #f4f4f4;
+  color: #212529;
+}
