@@ -1,0 +1,10 @@
+.exercise-box {
+  padding: 3rem 1rem;
+  border-radius: 8px;
+  background-color: #282c34;
+  color: #fff;
+}
+
+.exercise-output {
+  font-size: 2.5rem;
+}
