@@ -1,5 +1,6 @@
 import Container from 'react-bootstrap/Container'
 import Counter from './components/Counter'
+import ControlledInput from './components/ControlledInput'
 import './App.css'
 
 function App() {
@@ -10,6 +11,11 @@ function App() {
       <section className="mb-5">
         <h2 className="h4 mb-3">Exercise 1: Counter</h2>
         <Counter />
+      </section>
+
+      <section className="mb-5">
+        <h2 className="h4 mb-3">Exercise 2: Controlled Input Field</h2>
+        <ControlledInput />
       </section>
     </Container>
   )
