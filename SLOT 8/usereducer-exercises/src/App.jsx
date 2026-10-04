@@ -1,5 +1,6 @@
 import Container from 'react-bootstrap/Container'
 import StepCounter from './usereducer/StepCounter'
+import OrderTracker from './usereducer/OrderTracker'
 import './App.css'
 
 function App() {
@@ -10,6 +11,11 @@ function App() {
       <section className="mb-5">
         <h2 className="h4 mb-3">Bài 1: Bộ đếm có bước nhảy và lịch sử</h2>
         <StepCounter />
+      </section>
+
+      <section className="mb-5">
+        <h2 className="h4 mb-3">Bài 2: Theo dõi trạng thái đơn hàng</h2>
+        <OrderTracker />
       </section>
     </Container>
   )
