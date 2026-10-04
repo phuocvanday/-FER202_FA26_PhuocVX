@@ -2,6 +2,7 @@ import Container from 'react-bootstrap/Container'
 import StepCounter from './usereducer/StepCounter'
 import OrderTracker from './usereducer/OrderTracker'
 import KanbanBoard from './usereducer/KanbanBoard'
+import CourseWizard from './usereducer/CourseWizard'
 import './App.css'
 
 function App() {
@@ -22,6 +23,11 @@ function App() {
       <section className="mb-5">
         <h2 className="h4 mb-3">Bài 3: Bảng Kanban</h2>
         <KanbanBoard />
+      </section>
+
+      <section className="mb-5">
+        <h2 className="h4 mb-3">Bài 4: Form đăng ký khóa học nhiều bước</h2>
+        <CourseWizard />
       </section>
     </Container>
   )
