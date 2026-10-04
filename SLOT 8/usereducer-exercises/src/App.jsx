@@ -3,6 +3,7 @@ import StepCounter from './usereducer/StepCounter'
 import OrderTracker from './usereducer/OrderTracker'
 import KanbanBoard from './usereducer/KanbanBoard'
 import CourseWizard from './usereducer/CourseWizard'
+import NotesBoard from './usereducer/NotesBoard'
 import './App.css'
 
 function App() {
@@ -28,6 +29,11 @@ function App() {
       <section className="mb-5">
         <h2 className="h4 mb-3">Bài 4: Form đăng ký khóa học nhiều bước</h2>
         <CourseWizard />
+      </section>
+
+      <section className="mb-5">
+        <h2 className="h4 mb-3">Bài 5: Bảng ghi chú có Hoàn tác / Làm lại</h2>
+        <NotesBoard />
       </section>
     </Container>
   )
