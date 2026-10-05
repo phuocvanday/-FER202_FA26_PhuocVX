@@ -1,3 +1,14 @@
+import Header from "./components/Header";
+import Content from "./components/Content";
+import Footer from "./components/Footer";
+
 export default function App() {
-  return <h1>Theme Context Demo</h1>;
+  // App KHÔNG cần biết gì về theme
+  return (
+    <>
+      <Header />
+      <Content />
+      <Footer />
+    </>
+  );
 }
