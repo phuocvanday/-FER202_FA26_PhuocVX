@@ -5,6 +5,7 @@ import ProductFilter from './components/ProductFilter';
 import RegisterForm from './components/RegisterForm';
 import ValidatedRegisterForm from './components/ValidatedRegisterForm';
 import TodoList from './components/TodoList';
+import CartDemoPage from './pages/CartDemoPage';
 import { products } from './data/products';
 
 const App = () => (
@@ -47,6 +48,11 @@ const App = () => (
     <section className="mb-5">
       <h2 className="h4 mb-3">Bài 6: Todo list</h2>
       <TodoList />
+    </section>
+
+    <section className="mb-5">
+      <h2 className="h4 mb-3">Bài 7: Giỏ hàng với useReducer</h2>
+      <CartDemoPage />
     </section>
   </div>
 );
