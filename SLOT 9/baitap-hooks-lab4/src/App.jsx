@@ -2,6 +2,7 @@ import QuantityPicker from './components/QuantityPicker';
 import MiniCart from './components/MiniCart';
 import ProfilePreview from './components/ProfilePreview';
 import ProductFilter from './components/ProductFilter';
+import RegisterForm from './components/RegisterForm';
 import { products } from './data/products';
 
 const App = () => (
@@ -29,6 +30,11 @@ const App = () => (
     <section className="mb-5">
       <h2 className="h4 mb-3">Bài 3: Tìm kiếm, lọc và sắp xếp sản phẩm</h2>
       <ProductFilter products={products} />
+    </section>
+
+    <section className="mb-5">
+      <h2 className="h4 mb-3">Bài 4: Form đăng ký có điều khiển</h2>
+      <RegisterForm />
     </section>
   </div>
 );
