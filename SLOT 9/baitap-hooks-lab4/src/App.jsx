@@ -4,6 +4,7 @@ import ProfilePreview from './components/ProfilePreview';
 import ProductFilter from './components/ProductFilter';
 import RegisterForm from './components/RegisterForm';
 import ValidatedRegisterForm from './components/ValidatedRegisterForm';
+import TodoList from './components/TodoList';
 import { products } from './data/products';
 
 const App = () => (
@@ -41,6 +42,11 @@ const App = () => (
     <section className="mb-5">
       <h2 className="h4 mb-3">Bài 5: Form đăng ký có validation</h2>
       <ValidatedRegisterForm />
+    </section>
+
+    <section className="mb-5">
+      <h2 className="h4 mb-3">Bài 6: Todo list</h2>
+      <TodoList />
     </section>
   </div>
 );
