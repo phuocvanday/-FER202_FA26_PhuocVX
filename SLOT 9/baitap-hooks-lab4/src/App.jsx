@@ -1,5 +1,6 @@
 import QuantityPicker from './components/QuantityPicker';
 import MiniCart from './components/MiniCart';
+import ProfilePreview from './components/ProfilePreview';
 
 const App = () => (
   <div className="container my-4">
@@ -16,6 +17,11 @@ const App = () => (
 
       <h5>Phần 2. Giỏ hàng mini</h5>
       <MiniCart />
+    </section>
+
+    <section className="mb-5">
+      <h2 className="h4 mb-3">Bài 2: Form hồ sơ xem trước trực tiếp</h2>
+      <ProfilePreview />
     </section>
   </div>
 );
