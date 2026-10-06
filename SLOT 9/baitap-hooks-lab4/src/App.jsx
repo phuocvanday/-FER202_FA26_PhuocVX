@@ -1,83 +1,48 @@
-import QuantityPicker from './components/QuantityPicker';
-import MiniCart from './components/MiniCart';
-import ProfilePreview from './components/ProfilePreview';
-import ProductFilter from './components/ProductFilter';
-import RegisterForm from './components/RegisterForm';
-import ValidatedRegisterForm from './components/ValidatedRegisterForm';
-import TodoList from './components/TodoList';
-import CartDemoPage from './pages/CartDemoPage';
-import LoginForm from './components/LoginForm';
-import Layout from './components/layout/Layout';
+import { useState } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { products } from './data/products';
+import { CartProvider } from './context/CartContext';
+import Layout from './components/layout/Layout';
+import ShopPage from './pages/ShopPage';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import ExercisesPage from './pages/ExercisesPage';
+import LoginForm from './components/LoginForm';
 
-const HomeContent = () => {
-  const { isLoggedIn, user, login } = useAuth();
-  return isLoggedIn ? (
-    <p>{`Bạn đang đăng nhập bằng ${user.email}. Thử bấm nút Tối/Sáng trên Header.`}</p>
-  ) : (
-    <LoginForm onLoginSuccess={login} />
+const TITLES = {
+  shop: 'Cửa hàng',
+  cart: 'Giỏ hàng',
+  checkout: 'Thanh toán',
+  login: 'Đăng nhập',
+  exercises: 'Lab 4 – Bài 1 đến Bài 9',
+};
+
+const AppContent = () => {
+  const [page, setPage] = useState('shop');
+  const { login } = useAuth();
+
+  const handleLoginSuccess = (email) => {
+    login(email);
+    setPage('shop');
+  };
+
+  return (
+    <Layout title={TITLES[page]} currentPage={page} onNavigate={setPage}>
+      {page === 'shop' && <ShopPage />}
+      {page === 'cart' && <CartPage onNavigate={setPage} />}
+      {page === 'checkout' && <CheckoutPage onNavigate={setPage} />}
+      {page === 'login' && <LoginForm onLoginSuccess={handleLoginSuccess} />}
+      {page === 'exercises' && <ExercisesPage />}
+    </Layout>
   );
 };
 
 const App = () => (
   <ThemeProvider>
     <AuthProvider>
-      <Layout title="Lab 4 – Exercises Hooks">
-        <section className="mb-5">
-          <h2 className="h4 mb-3">Bài 1: Bộ chọn số lượng và giỏ hàng mini</h2>
-
-          <h5>Phần 1. Bộ chọn số lượng</h5>
-          <div className="d-flex flex-column gap-3 mb-4">
-            <QuantityPicker />
-            <QuantityPicker min={2} max={5} />
-          </div>
-
-          <h5>Phần 2. Giỏ hàng mini</h5>
-          <MiniCart />
-        </section>
-
-        <section className="mb-5">
-          <h2 className="h4 mb-3">Bài 2: Form hồ sơ xem trước trực tiếp</h2>
-          <ProfilePreview />
-        </section>
-
-        <section className="mb-5">
-          <h2 className="h4 mb-3">Bài 3: Tìm kiếm, lọc và sắp xếp sản phẩm</h2>
-          <ProductFilter products={products} />
-        </section>
-
-        <section className="mb-5">
-          <h2 className="h4 mb-3">Bài 4: Form đăng ký có điều khiển</h2>
-          <RegisterForm />
-        </section>
-
-        <section className="mb-5">
-          <h2 className="h4 mb-3">Bài 5: Form đăng ký có validation</h2>
-          <ValidatedRegisterForm />
-        </section>
-
-        <section className="mb-5">
-          <h2 className="h4 mb-3">Bài 6: Todo list</h2>
-          <TodoList />
-        </section>
-
-        <section className="mb-5">
-          <h2 className="h4 mb-3">Bài 7: Giỏ hàng với useReducer</h2>
-          <CartDemoPage />
-        </section>
-
-        <section className="mb-5">
-          <h2 className="h4 mb-3">Bài 8: Form đăng nhập với useReducer</h2>
-          <LoginForm />
-        </section>
-
-        <section className="pb-5">
-          <h2 className="h4 mb-3">Bài 9: Theme sáng/tối và đăng nhập với useContext</h2>
-          <HomeContent />
-        </section>
-      </Layout>
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
     </AuthProvider>
   </ThemeProvider>
 );
