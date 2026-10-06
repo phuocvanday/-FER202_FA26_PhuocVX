@@ -1,6 +1,8 @@
 import QuantityPicker from './components/QuantityPicker';
 import MiniCart from './components/MiniCart';
 import ProfilePreview from './components/ProfilePreview';
+import ProductFilter from './components/ProductFilter';
+import { products } from './data/products';
 
 const App = () => (
   <div className="container my-4">
@@ -22,6 +24,11 @@ const App = () => (
     <section className="mb-5">
       <h2 className="h4 mb-3">Bài 2: Form hồ sơ xem trước trực tiếp</h2>
       <ProfilePreview />
+    </section>
+
+    <section className="mb-5">
+      <h2 className="h4 mb-3">Bài 3: Tìm kiếm, lọc và sắp xếp sản phẩm</h2>
+      <ProductFilter products={products} />
     </section>
   </div>
 );
