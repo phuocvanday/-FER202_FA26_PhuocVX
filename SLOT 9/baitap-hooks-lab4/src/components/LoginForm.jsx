@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import { useId, useReducer } from 'react';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Alert from 'react-bootstrap/Alert';
@@ -21,6 +21,8 @@ const LoginForm = ({ onLoginSuccess }) => {
   const [state, dispatch] = useReducer(loginReducer, initialLoginState);
   const { values, errors, touched, status, message } = state;
   const isSubmitting = status === 'submitting';
+  // Mỗi LoginForm có id riêng để dùng được nhiều form trên cùng một trang
+  const formId = useId();
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -62,7 +64,7 @@ const LoginForm = ({ onLoginSuccess }) => {
         {status === 'error' && <Alert variant="danger">{message}</Alert>}
 
         <Form noValidate onSubmit={handleSubmit}>
-          <Form.Group className="mb-3" controlId="login-email">
+          <Form.Group className="mb-3" controlId={`${formId}-email`}>
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
@@ -77,7 +79,7 @@ const LoginForm = ({ onLoginSuccess }) => {
             <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="login-password">
+          <Form.Group className="mb-3" controlId={`${formId}-password`}>
             <Form.Label>Mật khẩu</Form.Label>
             <Form.Control
               type="password"
@@ -93,7 +95,7 @@ const LoginForm = ({ onLoginSuccess }) => {
 
           <Form.Check
             className="mb-3"
-            id="login-remember"
+            id={`${formId}-remember`}
             name="remember"
             label="Ghi nhớ đăng nhập"
             checked={values.remember}
