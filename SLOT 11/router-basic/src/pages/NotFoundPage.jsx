@@ -1,11 +1,12 @@
+import { Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-const NotFoundPage = () => (
-  <div className="py-5 text-center">
-    <h1 className="display-1 fw-bold text-secondary">404</h1>
-    <p className="lead mb-4">Không tìm thấy trang bạn yêu cầu.</p>
-    <Link to="/">Về trang chủ</Link>
-  </div>
+export const NotFoundPage = () => (
+  <Container className="mt-5 text-center">
+    <h1>404 - Không tìm thấy trang</h1>
+    <p>Đường dẫn bạn truy cập không tồn tại.</p>
+    <Link to="/" className="btn btn-outline-primary">Về trang chủ</Link>
+  </Container>
 );
 
 export default NotFoundPage;

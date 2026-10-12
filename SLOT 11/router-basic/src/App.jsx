@@ -1,9 +1,22 @@
-import Container from 'react-bootstrap/Container';
+import { Routes, Route } from 'react-router-dom';
+import { AppNavbar } from './components/AppNavbar';
+import { HomePage } from './pages/HomePage';
+import SkillsPage from './pages/SkillsPage';
+import ProjectsPage from './pages/ProjectsPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
-const App = () => (
-  <Container className="my-4">
-    <h1>React Router cơ bản</h1>
-  </Container>
-);
-
+const App = () => {
+    return (
+        <>
+            <AppNavbar />
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/skills" element={<SkillsPage />} />
+                <Route path="/projects" element={<ProjectsPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+                
+            </Routes>
+        </>
+    );
+}
 export default App;
