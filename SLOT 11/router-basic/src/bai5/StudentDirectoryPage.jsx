@@ -3,6 +3,7 @@ import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 import { CLASSES, STUDENTS } from './students';
 
 const StudentDirectoryPage = () => {
@@ -37,7 +38,7 @@ const StudentDirectoryPage = () => {
     <>
       <h1 className="mb-3">Danh bạ sinh viên</h1>
       <Row className="g-2 mb-3">
-        <Col md={8}>
+        <Col md={6}>
           <Form.Control
             type="search"
             placeholder="Tìm theo tên hoặc MSSV..."
@@ -59,6 +60,15 @@ const StudentDirectoryPage = () => {
               </option>
             ))}
           </Form.Select>
+        </Col>
+        <Col md={2} className="d-grid">
+          <Button
+            variant="outline-secondary"
+            disabled={!q && !classFilter}
+            onClick={() => setSearchParams({})}
+          >
+            Xóa lọc
+          </Button>
         </Col>
       </Row>
       <p className="text-muted">
