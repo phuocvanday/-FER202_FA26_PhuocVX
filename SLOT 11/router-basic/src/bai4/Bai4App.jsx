@@ -2,12 +2,14 @@ import { Routes, Route } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import EventPage from './EventPage';
 import RegisterPage from './RegisterPage';
+import SuccessPage from './SuccessPage';
 
 const Bai4App = () => (
   <Container className="my-4">
     <Routes>
       <Route path="/" element={<EventPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/success" element={<SuccessPage />} />
     </Routes>
   </Container>
 );
