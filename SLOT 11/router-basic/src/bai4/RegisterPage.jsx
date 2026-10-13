@@ -67,7 +67,12 @@ const RegisterPage = () => {
             ))}
           </Form.Group>
 
-          <Button type="submit">Gửi đăng ký</Button>
+          <div className="d-flex gap-2">
+            <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
+              Quay lại
+            </Button>
+            <Button type="submit">Gửi đăng ký</Button>
+          </div>
         </Form>
       </Card.Body>
     </Card>
