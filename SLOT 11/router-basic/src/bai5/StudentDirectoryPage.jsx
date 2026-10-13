@@ -25,6 +25,14 @@ const StudentDirectoryPage = () => {
     );
   };
 
+  const keyword = q.trim().toLowerCase();
+  const result = STUDENTS.filter(
+    (s) =>
+      (s.name.toLowerCase().includes(keyword) ||
+        s.id.toLowerCase().includes(keyword)) &&
+      (!classFilter || s.className === classFilter),
+  );
+
   return (
     <>
       <h1 className="mb-3">Danh bạ sinh viên</h1>
@@ -53,6 +61,9 @@ const StudentDirectoryPage = () => {
           </Form.Select>
         </Col>
       </Row>
+      <p className="text-muted">
+        Tìm thấy {result.length}/{STUDENTS.length} sinh viên
+      </p>
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -63,14 +74,22 @@ const StudentDirectoryPage = () => {
           </tr>
         </thead>
         <tbody>
-          {STUDENTS.map((s) => (
-            <tr key={s.id}>
-              <td>{s.id}</td>
-              <td>{s.name}</td>
-              <td>{s.className}</td>
-              <td>{s.gpa.toFixed(1)}</td>
+          {result.length === 0 ? (
+            <tr>
+              <td colSpan={4} className="text-center text-muted">
+                Không có sinh viên phù hợp.
+              </td>
             </tr>
-          ))}
+          ) : (
+            result.map((s) => (
+              <tr key={s.id}>
+                <td>{s.id}</td>
+                <td>{s.name}</td>
+                <td>{s.className}</td>
+                <td>{s.gpa.toFixed(1)}</td>
+              </tr>
+            ))
+          )}
         </tbody>
       </Table>
     </>
