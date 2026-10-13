@@ -4,12 +4,15 @@ import { STUDENTS } from './students';
 
 const StudentDirectoryPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const q = searchParams.get('q') ?? '';
+  const classFilter = searchParams.get('class') ?? '';
 
   return (
     <>
       <h1 className="mb-3">Danh bạ sinh viên</h1>
       <p className="text-muted">
-        Query string hiện tại: <code>?{searchParams.toString()}</code>
+        Từ khóa: <code>{q || '(trống)'}</code> · Lớp:{' '}
+        <code>{classFilter || 'Tất cả lớp'}</code>
       </p>
       <Table striped bordered hover>
         <thead>
