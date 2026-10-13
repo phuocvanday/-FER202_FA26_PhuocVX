@@ -1,6 +1,9 @@
 import { useSearchParams } from 'react-router-dom';
 import Table from 'react-bootstrap/Table';
-import { STUDENTS } from './students';
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import { CLASSES, STUDENTS } from './students';
 
 const StudentDirectoryPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,10 +28,31 @@ const StudentDirectoryPage = () => {
   return (
     <>
       <h1 className="mb-3">Danh bạ sinh viên</h1>
-      <p className="text-muted">
-        Từ khóa: <code>{q || '(trống)'}</code> · Lớp:{' '}
-        <code>{classFilter || 'Tất cả lớp'}</code>
-      </p>
+      <Row className="g-2 mb-3">
+        <Col md={8}>
+          <Form.Control
+            type="search"
+            placeholder="Tìm theo tên hoặc MSSV..."
+            aria-label="Tìm theo tên hoặc MSSV"
+            value={q}
+            onChange={(e) => updateParam('q', e.target.value, true)}
+          />
+        </Col>
+        <Col md={4}>
+          <Form.Select
+            aria-label="Chọn lớp"
+            value={classFilter}
+            onChange={(e) => updateParam('class', e.target.value)}
+          >
+            <option value="">Tất cả lớp</option>
+            {CLASSES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </Form.Select>
+        </Col>
+      </Row>
       <Table striped bordered hover>
         <thead>
           <tr>
