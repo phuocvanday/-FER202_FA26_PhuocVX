@@ -7,6 +7,21 @@ const StudentDirectoryPage = () => {
   const q = searchParams.get('q') ?? '';
   const classFilter = searchParams.get('class') ?? '';
 
+  const updateParam = (key, value, replace = false) => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (value) {
+          next.set(key, value);
+        } else {
+          next.delete(key);
+        }
+        return next;
+      },
+      { replace },
+    );
+  };
+
   return (
     <>
       <h1 className="mb-3">Danh bạ sinh viên</h1>
