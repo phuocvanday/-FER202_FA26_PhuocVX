@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import New from './pages/New';
 import Contact from './pages/Contact';
+import ProductList from './pages/ProductList';
 
 const App = () => (
   <div className="d-flex flex-column min-vh-100">
@@ -15,6 +16,7 @@ const App = () => (
       <MyCarousel />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/products" element={<ProductList />} />
         <Route path="/about" element={<About />} />
         <Route path="/new" element={<New />} />
         <Route path="/contact" element={<Contact />} />
