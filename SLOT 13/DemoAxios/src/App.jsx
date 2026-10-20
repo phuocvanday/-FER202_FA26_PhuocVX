@@ -5,6 +5,7 @@ import CreatePost from './components/CreatePost';
 import UpdatePost from './components/UpdatePost';
 import PatchPost from './components/PatchPost';
 import DeletePost from './components/DeletePost';
+import RequestConfig from './components/RequestConfig';
 
 const App = () => (
   <Container className="my-4">
@@ -20,6 +21,8 @@ const App = () => (
     <PatchPost />
     <hr className="my-5" />
     <DeletePost />
+    <hr className="my-5" />
+    <RequestConfig />
   </Container>
 );
 
