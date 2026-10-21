@@ -14,25 +14,26 @@ const CreatePost = () => {
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  // Event handler cũng có thể là hàm async
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
     setResult(null);
-
-    axios
-      .post(API_URL, {
+    try {
+      const response = await axios.post(API_URL, {
         title: title,
         body: body,
         userId: 1,
-      })
-      .then((response) => {
-        setResult({ status: response.status, data: response.data });
-        setTitle('');
-        setBody('');
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setSubmitting(false));
+      });
+      setResult({ status: response.status, data: response.data });
+      setTitle('');
+      setBody('');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

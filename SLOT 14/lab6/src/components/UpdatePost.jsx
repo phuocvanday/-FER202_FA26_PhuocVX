@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -10,39 +10,44 @@ const API_URL = 'https://jsonplaceholder.typicode.com/posts/1';
 
 const UpdatePost = () => {
   const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-  const [updating, setUpdating] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const requestPost = useCallback(
-    () =>
-      axios
-        .get(API_URL)
-        .then((response) => setPost(response.data))
-        .catch((err) => setError(err.message)),
-    [],
-  );
-
+  // 1. GET dữ liệu cũ đổ vào form
   useEffect(() => {
-    requestPost();
-  }, [requestPost]);
+    const fetchPost = async () => {
+      try {
+        const response = await axios.get(API_URL);
+        setPost(response.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPost();
+  }, []);
 
-  // PUT = thay thế toàn bộ tài nguyên → phải gửi đủ các trường
-  const handleUpdate = () => {
-    setUpdating(true);
+  // 2. PUT = thay thế toàn bộ tài nguyên → phải gửi đủ các trường
+  const handleUpdate = async () => {
+    setSaving(true);
     setError(null);
     setResult(null);
-
-    axios
-      .put(API_URL, {
+    try {
+      const response = await axios.put(API_URL, {
         id: post.id,
         userId: post.userId,
         title: post.title,
         body: post.body,
-      })
-      .then((response) => setResult({ status: response.status, data: response.data }))
-      .catch((err) => setError(err.message))
-      .finally(() => setUpdating(false));
+      });
+      setResult({ status: response.status, data: response.data });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -53,16 +58,16 @@ const UpdatePost = () => {
         <code>{'{ id, userId, title, body }'}</code>
       </p>
 
-      {!post && !error && (
+      {loading && (
         <div className="d-flex align-items-center gap-2">
           <Spinner animation="border" size="sm" />
           <span>Loading...</span>
         </div>
       )}
 
-      {error && !post && <Alert variant="danger">Error: {error}</Alert>}
+      {!loading && error && !post && <Alert variant="danger">Error: {error}</Alert>}
 
-      {post && (
+      {!loading && post && (
         <>
           <Form className="mb-3">
             <Form.Group className="mb-3" controlId="update-title">
@@ -81,8 +86,8 @@ const UpdatePost = () => {
                 onChange={(e) => setPost({ ...post, body: e.target.value })}
               />
             </Form.Group>
-            <Button onClick={handleUpdate} disabled={updating}>
-              {updating ? 'Đang cập nhật...' : 'Cập nhật (PUT)'}
+            <Button onClick={handleUpdate} disabled={saving}>
+              {saving ? 'Đang lưu...' : 'Cập nhật (PUT)'}
             </Button>
           </Form>
 

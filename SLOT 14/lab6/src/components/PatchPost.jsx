@@ -11,19 +11,21 @@ const PatchPost = () => {
   const [title, setTitle] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-  const [patching, setPatching] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // PATCH = sửa một phần → chỉ gửi trường thay đổi
-  const handlePatch = () => {
-    setPatching(true);
+  const handlePatch = async () => {
+    setSaving(true);
     setError(null);
     setResult(null);
-
-    axios
-      .patch(API_URL, { title }) // chỉ gửi 1 trường
-      .then((response) => setResult({ status: response.status, data: response.data }))
-      .catch((err) => setError(err.message))
-      .finally(() => setPatching(false));
+    try {
+      const response = await axios.patch(API_URL, { title }); // chỉ gửi 1 trường
+      setResult({ status: response.status, data: response.data });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -43,8 +45,8 @@ const PatchPost = () => {
             onChange={(e) => setTitle(e.target.value)}
           />
         </Form.Group>
-        <Button onClick={handlePatch} disabled={!title.trim() || patching}>
-          {patching ? 'Đang cập nhật...' : 'Cập nhật (PATCH)'}
+        <Button onClick={handlePatch} disabled={!title.trim() || saving}>
+          {saving ? 'Đang lưu...' : 'Cập nhật (PATCH)'}
         </Button>
       </Form>
 

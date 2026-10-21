@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -11,9 +11,9 @@ const RequestConfig = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const request = useCallback(
-    () =>
-      axios({
+  const fetchInfo = async () => {
+    try {
+      const response = await axios({
         method: 'get',
         url: 'https://jsonplaceholder.typicode.com/posts',
         params: { _page: 1, _limit: 3 },
@@ -22,34 +22,36 @@ const RequestConfig = () => {
           Authorization: 'Bearer demo-token-123', // ví dụ header xác thực
         },
         timeout: 5000, // quá 5 giây → lỗi
-      })
-        .then((response) => {
-          setInfo({
-            status: response.status,
-            contentType: response.headers['content-type'],
-            total: response.headers['x-total-count'],
-            data: response.data,
-          });
-        })
-        .catch((err) => {
-          if (err.code === 'ECONNABORTED') setError('Request quá thời gian (timeout)');
-          else if (err.response) setError(`Server trả lỗi ${err.response.status}`);
-          else setError(err.message);
-        })
-        .finally(() => setLoading(false)),
-    [],
-  );
+      });
+      setInfo({
+        status: response.status,
+        contentType: response.headers['content-type'],
+        total: response.headers['x-total-count'],
+        data: response.data,
+      });
+      setError(null);
+    } catch (err) {
+      if (err.code === 'ECONNABORTED') setError('Request quá thời gian (timeout)');
+      else if (err.response) setError(`Server trả lỗi ${err.response.status}`);
+      else setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const fetchInfo = () => {
+  const handleReload = () => {
     setLoading(true);
     setError(null);
     setInfo(null);
-    request();
+    fetchInfo();
   };
 
   useEffect(() => {
-    request();
-  }, [request]);
+    const loadInfo = async () => {
+      await fetchInfo();
+    };
+    loadInfo();
+  }, []);
 
   return (
     <section>
@@ -62,7 +64,7 @@ const RequestConfig = () => {
           </p>
         </div>
         {!loading && (
-          <Button variant="outline-primary" size="sm" onClick={fetchInfo}>
+          <Button variant="outline-primary" size="sm" onClick={handleReload}>
             Gửi lại
           </Button>
         )}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -14,36 +14,36 @@ const DeletePost = () => {
   const [error, setError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
-  const requestPosts = useCallback(
-    () =>
-      axios
-        .get(API_URL, { params: { _limit: 5 } })
-        .then((response) => setPosts(response.data))
-        .catch((err) => setError(err.message))
-        .finally(() => setLoading(false)),
-    [],
-  );
-
   useEffect(() => {
-    requestPosts();
-  }, [requestPosts]);
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get(API_URL, { params: { _limit: 5 } });
+        setPosts(response.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!window.confirm(`Xóa bài viết #${id}?`)) return;
 
     setDeletingId(id);
     setError(null);
     setMessage('');
-
-    axios
-      .delete(`${API_URL}/${id}`)
-      .then((response) => {
-        // JSONPlaceholder không xóa thật → tự cập nhật state bằng filter
-        setPosts((prev) => prev.filter((p) => p.id !== id));
-        setMessage(`Đã xóa bài #${id} – Status: ${response.status}`);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setDeletingId(null));
+    try {
+      const response = await axios.delete(`${API_URL}/${id}`);
+      // JSONPlaceholder không xóa thật → tự cập nhật state bằng filter
+      setPosts((prev) => prev.filter((p) => p.id !== id));
+      setMessage(`Đã xóa bài #${id} – Status: ${response.status}`);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (

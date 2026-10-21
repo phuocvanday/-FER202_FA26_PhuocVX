@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Alert from 'react-bootstrap/Alert';
 import Badge from 'react-bootstrap/Badge';
@@ -13,25 +13,30 @@ const AxiosDemo = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const requestUsers = useCallback(
-    () =>
-      axios
-        .get(API_URL)
-        .then((response) => setUsers(response.data))
-        .catch((err) => setError(err.message || 'Không tải được dữ liệu'))
-        .finally(() => setLoading(false)),
-    [],
-  );
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get(API_URL);
+      setUsers(response.data);
+      setError('');
+    } catch (err) {
+      setError(err.message || 'Không tải được dữ liệu');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const fetchUsers = () => {
+  const handleReload = () => {
     setLoading(true);
     setError('');
-    requestUsers();
+    fetchUsers();
   };
 
   useEffect(() => {
-    requestUsers();
-  }, [requestUsers]);
+    const loadUsers = async () => {
+      await fetchUsers();
+    };
+    loadUsers();
+  }, []);
 
   if (loading) {
     return (
@@ -46,7 +51,7 @@ const AxiosDemo = () => {
     return (
       <Alert variant="danger" className="d-flex justify-content-between align-items-center">
         <span>Lỗi: {error}</span>
-        <Button variant="outline-danger" size="sm" onClick={fetchUsers}>
+        <Button variant="outline-danger" size="sm" onClick={handleReload}>
           Thử lại
         </Button>
       </Alert>
@@ -59,7 +64,7 @@ const AxiosDemo = () => {
         <p className="text-muted mb-0">
           Tải <strong>{users.length}</strong> users từ <code>jsonplaceholder.typicode.com/users</code>
         </p>
-        <Button variant="outline-primary" size="sm" onClick={fetchUsers}>
+        <Button variant="outline-primary" size="sm" onClick={handleReload}>
           Tải lại
         </Button>
       </div>

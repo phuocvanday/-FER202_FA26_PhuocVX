@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Alert from 'react-bootstrap/Alert';
 import Badge from 'react-bootstrap/Badge';
@@ -13,27 +13,32 @@ const PostList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const requestPosts = useCallback(
-    () =>
-      axios
-        .get(API_URL, {
-          params: { userId: 1, _limit: 5 }, // → /posts?userId=1&_limit=5
-        })
-        .then((response) => setPosts(response.data))
-        .catch((err) => setError(err.message))
-        .finally(() => setLoading(false)),
-    [],
-  );
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get(API_URL, {
+        params: { userId: 1, _limit: 5 }, // → /posts?userId=1&_limit=5
+      });
+      setPosts(response.data);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const fetchPosts = () => {
+  const handleReload = () => {
     setLoading(true);
     setError(null);
-    requestPosts();
+    fetchPosts();
   };
 
   useEffect(() => {
-    requestPosts();
-  }, [requestPosts]);
+    const loadPosts = async () => {
+      await fetchPosts();
+    };
+    loadPosts();
+  }, []);
 
   return (
     <section>
@@ -46,7 +51,7 @@ const PostList = () => {
           </p>
         </div>
         {!loading && !error && (
-          <Button variant="outline-primary" size="sm" onClick={fetchPosts}>
+          <Button variant="outline-primary" size="sm" onClick={handleReload}>
             Tải lại
           </Button>
         )}
@@ -65,7 +70,7 @@ const PostList = () => {
           className="d-flex justify-content-between align-items-center"
         >
           <span>Error: {error}</span>
-          <Button variant="outline-danger" size="sm" onClick={fetchPosts}>
+          <Button variant="outline-danger" size="sm" onClick={handleReload}>
             Thử lại
           </Button>
         </Alert>
