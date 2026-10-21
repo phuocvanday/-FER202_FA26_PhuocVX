@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import Alert from 'react-bootstrap/Alert';
 import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
-
-const API_URL = 'https://jsonplaceholder.typicode.com/users';
+import { userApi } from '../api/postApi';
 
 const AxiosDemo = () => {
   const [users, setUsers] = useState([]);
@@ -15,11 +14,12 @@ const AxiosDemo = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(API_URL);
+      const response = await userApi.getAll();
+      
       setUsers(response.data);
       setError('');
     } catch (err) {
-      setError(err.message || 'Không tải được dữ liệu');
+      setError(err.userMessage ?? err.message);
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,7 @@ const AxiosDemo = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <p className="text-muted mb-0">
-          Tải <strong>{users.length}</strong> users từ <code>jsonplaceholder.typicode.com/users</code>
+          Tải <strong>{users.length}</strong> users từ <code>GET /users</code> (qua userApi)
         </p>
         <Button variant="outline-primary" size="sm" onClick={handleReload}>
           Tải lại

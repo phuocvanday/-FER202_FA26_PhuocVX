@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -13,27 +13,23 @@ const RequestConfig = () => {
 
   const fetchInfo = async () => {
     try {
-      const response = await axios({
+      const response = await axiosClient({
         method: 'get',
-        url: 'https://jsonplaceholder.typicode.com/posts',
+        url: '/posts', // URL tương đối, baseURL lấy từ instance
         params: { _page: 1, _limit: 3 },
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer demo-token-123', // ví dụ header xác thực
-        },
-        timeout: 5000, // quá 5 giây → lỗi
+        headers: { Accept: 'application/json', 'X-Client': 'FER202' },
+        timeout: 5000, // ghi đè timeout 8000 của instance cho riêng request này
       });
       setInfo({
         status: response.status,
+        duration: response.duration, // do response interceptor tính
         contentType: response.headers['content-type'],
         total: response.headers['x-total-count'],
         data: response.data,
       });
       setError(null);
     } catch (err) {
-      if (err.code === 'ECONNABORTED') setError('Request quá thời gian (timeout)');
-      else if (err.response) setError(`Server trả lỗi ${err.response.status}`);
-      else setError(err.message);
+      setError(err.userMessage ?? err.message);
     } finally {
       setLoading(false);
     }
@@ -59,7 +55,7 @@ const RequestConfig = () => {
         <div>
           <h2 className="h4 mb-1">Cấu hình request</h2>
           <p className="text-muted mb-0">
-            Cú pháp <code>axios(config)</code> với <code>headers</code>,{' '}
+            Cú pháp <code>axiosClient(config)</code> với <code>headers</code>,{' '}
             <code>params: {'{_page: 1, _limit: 3}'}</code> và <code>timeout: 5000</code>
           </p>
         </div>
@@ -86,6 +82,10 @@ const RequestConfig = () => {
               <tr>
                 <th style={{ width: 220 }}>Status</th>
                 <td>{info.status}</td>
+              </tr>
+              <tr>
+                <th>Thời gian xử lý</th>
+                <td>{info.duration} ms</td>
               </tr>
               <tr>
                 <th>Content-Type</th>

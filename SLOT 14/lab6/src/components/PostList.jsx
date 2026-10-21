@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import postApi from '../api/postApi';
 import Alert from 'react-bootstrap/Alert';
 import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Spinner from 'react-bootstrap/Spinner';
 
-const API_URL = 'https://jsonplaceholder.typicode.com/posts';
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -15,13 +14,11 @@ const PostList = () => {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get(API_URL, {
-        params: { userId: 1, _limit: 5 }, // → /posts?userId=1&_limit=5
-      });
+      const response = await postApi.getAll({ userId: 1, _limit: 5 });
       setPosts(response.data);
       setError(null);
     } catch (err) {
-      setError(err.message);
+      setError(err.userMessage ?? err.message);
     } finally {
       setLoading(false);
     }

@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import axios from 'axios';
+import postApi from '../api/postApi';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
-
-const API_URL = 'https://jsonplaceholder.typicode.com/posts/1';
 
 const PatchPost = () => {
   const [title, setTitle] = useState('');
@@ -19,10 +17,10 @@ const PatchPost = () => {
     setError(null);
     setResult(null);
     try {
-      const response = await axios.patch(API_URL, { title }); // chỉ gửi 1 trường
+      const response = await postApi.patch(1, { title }); // chỉ gửi 1 trường
       setResult({ status: response.status, data: response.data });
     } catch (err) {
-      setError(err.message);
+      setError(err.userMessage ?? err.message);
     } finally {
       setSaving(false);
     }

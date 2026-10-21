@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import axios from 'axios';
+import postApi from '../api/postApi';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
-
-const API_URL = 'https://jsonplaceholder.typicode.com/posts';
 
 const CreatePost = () => {
   const [title, setTitle] = useState('');
@@ -21,7 +19,7 @@ const CreatePost = () => {
     setError(null);
     setResult(null);
     try {
-      const response = await axios.post(API_URL, {
+      const response = await postApi.create({
         title: title,
         body: body,
         userId: 1,
@@ -30,7 +28,7 @@ const CreatePost = () => {
       setTitle('');
       setBody('');
     } catch (err) {
-      setError(err.message);
+      setError(err.userMessage ?? err.message);
     } finally {
       setSubmitting(false);
     }

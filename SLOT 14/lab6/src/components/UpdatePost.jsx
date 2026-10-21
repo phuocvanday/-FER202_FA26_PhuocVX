@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import postApi from '../api/postApi';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
-
-const API_URL = 'https://jsonplaceholder.typicode.com/posts/1';
 
 const UpdatePost = () => {
   const [post, setPost] = useState(null);
@@ -19,10 +17,10 @@ const UpdatePost = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(API_URL);
+        const response = await postApi.getById(1);
         setPost(response.data);
       } catch (err) {
-        setError(err.message);
+        setError(err.userMessage ?? err.message);
       } finally {
         setLoading(false);
       }
@@ -36,7 +34,7 @@ const UpdatePost = () => {
     setError(null);
     setResult(null);
     try {
-      const response = await axios.put(API_URL, {
+      const response = await postApi.update(1, {
         id: post.id,
         userId: post.userId,
         title: post.title,
@@ -44,7 +42,7 @@ const UpdatePost = () => {
       });
       setResult({ status: response.status, data: response.data });
     } catch (err) {
-      setError(err.message);
+      setError(err.userMessage ?? err.message);
     } finally {
       setSaving(false);
     }

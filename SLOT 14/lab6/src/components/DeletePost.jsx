@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import postApi from '../api/postApi';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Spinner from 'react-bootstrap/Spinner';
-
-const API_URL = 'https://jsonplaceholder.typicode.com/posts';
 
 const DeletePost = () => {
   const [posts, setPosts] = useState([]);
@@ -17,10 +15,10 @@ const DeletePost = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(API_URL, { params: { _limit: 5 } });
+        const response = await postApi.getAll({ _limit: 5 });
         setPosts(response.data);
       } catch (err) {
-        setError(err.message);
+        setError(err.userMessage ?? err.message);
       } finally {
         setLoading(false);
       }
@@ -35,12 +33,12 @@ const DeletePost = () => {
     setError(null);
     setMessage('');
     try {
-      const response = await axios.delete(`${API_URL}/${id}`);
+      const response = await postApi.remove(id);
       // JSONPlaceholder không xóa thật → tự cập nhật state bằng filter
       setPosts((prev) => prev.filter((p) => p.id !== id));
       setMessage(`Đã xóa bài #${id} – Status: ${response.status}`);
     } catch (err) {
-      setError(err.message);
+      setError(err.userMessage ?? err.message);
     } finally {
       setDeletingId(null);
     }
