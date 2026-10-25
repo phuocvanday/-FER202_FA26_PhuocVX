@@ -1,42 +1,29 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 import { useParams, useNavigate, useOutletContext, Link } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Alert from 'react-bootstrap/Alert';
+import useAxios from '../hooks/useAxios';
 import postApi, { userApi } from '../api/postApi';
 import PostForm from '../components/PostForm';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+
+const loadEditData = async (id, signal) => {
+  const [pRes, uRes] = await Promise.all([
+    postApi.getById(id, signal),
+    userApi.getAll(signal),
+  ]);
+  return { data: { post: pRes.data, users: uRes.data } };
+};
 
 export default function PostEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { notify } = useOutletContext();
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data, loading, error } = useAxios(
+    (signal) => loadEditData(id, signal),
+    [id]
+  );
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const load = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const [pRes, uRes] = await Promise.all([
-          postApi.getById(id, controller.signal),
-          userApi.getAll(controller.signal),
-        ]);
-        setData({ post: pRes.data, users: uRes.data });
-      } catch (err) {
-        if (axios.isCancel(err)) return;
-        setError(err.userMessage ?? err.message);
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    };
-    load();
-    return () => controller.abort();
-  }, [id]);
 
   const handleUpdate = async (values) => {
     setSubmitting(true);

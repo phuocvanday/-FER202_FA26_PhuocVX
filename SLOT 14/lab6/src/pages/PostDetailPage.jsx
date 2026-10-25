@@ -10,6 +10,7 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Badge from 'react-bootstrap/Badge';
 import Table from 'react-bootstrap/Table';
+import useAxios from '../hooks/useAxios';
 import useFlash from '../hooks/useFlash';
 import postApi, { userApi } from '../api/postApi';
 import ConfirmModal from '../components/ConfirmModal';
@@ -55,30 +56,10 @@ export default function PostDetailPage() {
   const navigate = useNavigate();
   const { notify } = useOutletContext();
 
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [reloadKey, setReloadKey] = useState(0);
-  const refetch = () => setReloadKey((k) => k + 1);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const load = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await loadDetail(id, controller.signal);
-        setData(res.data);
-      } catch (err) {
-        if (axios.isCancel(err)) return;
-        setError(err.userMessage ?? err.message);
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    };
-    load();
-    return () => controller.abort();
-  }, [id, reloadKey]);
+  const { data, setData, loading, error, refetch } = useAxios(
+    (signal) => loadDetail(id, signal),
+    [id]
+  );
 
   const [quickTitle, setQuickTitle] = useState('');
   const [patching, setPatching] = useState(false);

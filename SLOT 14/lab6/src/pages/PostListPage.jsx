@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 import { Link, useSearchParams, useOutletContext } from 'react-router-dom';
 import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
@@ -9,6 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Badge from 'react-bootstrap/Badge';
+import useAxios from '../hooks/useAxios';
 import useFlash from '../hooks/useFlash';
 import postApi, { userApi } from '../api/postApi';
 import ConfirmModal from '../components/ConfirmModal';
@@ -32,49 +32,25 @@ export default function PostListPage() {
     setSearchParams(merged);
   };
 
-  const [users, setUsers] = useState([]);
-  useEffect(() => {
-    const controller = new AbortController();
-    const load = async () => {
-      try {
-        const res = await userApi.getAll(controller.signal);
-        setUsers(res.data);
-      } catch (err) {
-        if (!axios.isCancel(err)) console.warn(err.userMessage);
-      }
-    };
-    load();
-    return () => controller.abort();
-  }, []);
+  const { data: users } = useAxios((signal) => userApi.getAll(signal), [], {
+    initialData: [],
+  });
 
-  const [posts, setPosts] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [reloadKey, setReloadKey] = useState(0);
+  const params = { _page: page, _limit: LIMIT };
+  if (userId) params.userId = userId;
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const load = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const params = { _page: page, _limit: LIMIT };
-        if (userId) params.userId = userId;
-        const res = await postApi.getAll(params, controller.signal);
-        setPosts(res.data);
-        setTotal(Number(res.headers['x-total-count'] ?? res.data.length));
-      } catch (err) {
-        if (axios.isCancel(err)) return;
-        setError(err.userMessage ?? err.message);
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    };
-    load();
-    return () => controller.abort();
-  }, [page, userId, reloadKey]);
+  const {
+    data: posts,
+    setData: setPosts,
+    headers,
+    loading,
+    error,
+    refetch,
+  } = useAxios((signal) => postApi.getAll(params, signal), [page, userId], {
+    initialData: [],
+  });
 
+  const total = Number(headers['x-total-count'] ?? posts.length);
   const totalPages = Math.max(1, Math.ceil(total / LIMIT));
   const authorName = (id) => users.find((u) => u.id === id)?.name ?? `User ${id}`;
 
@@ -85,8 +61,8 @@ export default function PostListPage() {
     try {
       const res = await postApi.remove(toDelete.id);
       setPosts((prev) => prev.filter((p) => p.id !== toDelete.id));
-      setTotal((t) => t - 1);
       notify('success', `DELETE /posts/${toDelete.id} → ${res.status}`);
+      refetch();
     } catch (err) {
       notify('danger', 'Xóa thất bại: ' + (err.userMessage ?? err.message));
     } finally {
@@ -125,9 +101,7 @@ export default function PostListPage() {
         </Col>
       </Row>
 
-      {error && (
-        <ErrorAlert message={error} onRetry={() => setReloadKey((k) => k + 1)} />
-      )}
+      {error && <ErrorAlert message={error} onRetry={refetch} />}
 
       <Table striped bordered hover responsive className={loading ? 'opacity-50' : ''}>
         <thead>

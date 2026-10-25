@@ -1,45 +1,28 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Button from 'react-bootstrap/Button';
-import postApi from '../../api/postApi';
+import useAxios from '../../hooks/useAxios';
+import AsyncContent from '../common/AsyncContent';
 import ConfirmModal from '../ConfirmModal';
-import LoadingSpinner from '../common/LoadingSpinner';
-import ErrorAlert from '../common/ErrorAlert';
-import EmptyState from '../common/EmptyState';
+import postApi from '../../api/postApi';
 
 export default function DeletePostCard() {
   const { notify } = useOutletContext();
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data, setData, loading, error, refetch } = useAxios(
+    (signal) => postApi.getAll({ _limit: 5 }, signal),
+    [],
+    { initialData: [] }
+  );
   const [toDelete, setToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const load = async () => {
-      try {
-        const res = await postApi.getAll({ _limit: 5 }, controller.signal);
-        setPosts(res.data);
-      } catch (err) {
-        if (axios.isCancel(err)) return;
-        setError(err.userMessage ?? err.message);
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    };
-    load();
-    return () => controller.abort();
-  }, []);
 
   const handleDelete = async () => {
     setDeleting(true);
     try {
       const res = await postApi.remove(toDelete.id);
-      setPosts((prev) => prev.filter((p) => p.id !== toDelete.id));
+      setData((prev) => prev.filter((p) => p.id !== toDelete.id));
       notify('success', `DELETE /posts/${toDelete.id} → ${res.status}`);
       setToDelete(null);
     } catch (err) {
@@ -55,34 +38,36 @@ export default function DeletePostCard() {
         <strong>2.5 · DELETE</strong> /posts/:id
       </Card.Header>
       <Card.Body>
-        {loading && <LoadingSpinner />}
-        {!loading && error && <ErrorAlert message={error} />}
-        {!loading && !error && posts.length === 0 && (
-          <EmptyState text="Đã xóa hết" />
-        )}
-        {!loading && !error && posts.length > 0 && (
-          <ListGroup variant="flush">
-            {posts.map((p) => (
-              <ListGroup.Item
-                key={p.id}
-                className="d-flex justify-content-between align-items-center gap-2"
-              >
-                <span>
-                  #{p.id} – {p.title}
-                </span>
-                <Button
-                  size="sm"
-                  variant="outline-danger"
-                  onClick={() => setToDelete(p)}
+        <AsyncContent
+          loading={loading}
+          error={error}
+          data={data}
+          onRetry={refetch}
+          emptyText="Đã xóa hết"
+        >
+          {(posts) => (
+            <ListGroup variant="flush">
+              {posts.map((p) => (
+                <ListGroup.Item
+                  key={p.id}
+                  className="d-flex justify-content-between align-items-center gap-2"
                 >
-                  Xóa
-                </Button>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        )}
+                  <span>
+                    #{p.id} – {p.title}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="outline-danger"
+                    onClick={() => setToDelete(p)}
+                  >
+                    Xóa
+                  </Button>
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          )}
+        </AsyncContent>
       </Card.Body>
-
       <ConfirmModal
         show={!!toDelete}
         title="Xóa bài viết"
