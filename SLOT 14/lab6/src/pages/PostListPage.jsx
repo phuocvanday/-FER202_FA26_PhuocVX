@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams, useOutletContext } from 'react-router-dom';
 import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
@@ -8,7 +8,9 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Badge from 'react-bootstrap/Badge';
+import InputGroup from 'react-bootstrap/InputGroup';
 import useAxios from '../hooks/useAxios';
+import useDebounce from '../hooks/useDebounce';
 import useFlash from '../hooks/useFlash';
 import postApi, { userApi } from '../api/postApi';
 import ConfirmModal from '../components/ConfirmModal';
@@ -23,14 +25,23 @@ export default function PostListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page') ?? 1);
   const userId = searchParams.get('userId') ?? '';
+  const q = searchParams.get('q') ?? '';
 
   const changeQuery = (next) => {
-    const merged = { page: String(page), userId, ...next };
+    const merged = { page: String(page), userId, q, ...next };
     Object.keys(merged).forEach(
       (k) => (merged[k] === '' || merged[k] == null) && delete merged[k]
     );
     setSearchParams(merged);
   };
+
+  // NC9: ô tìm kiếm + debounce 500ms → ghi q lên URL
+  const [keyword, setKeyword] = useState(q);
+  const debounced = useDebounce(keyword.trim(), 500);
+  useEffect(() => {
+    if (debounced !== q) changeQuery({ q: debounced, page: '1' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debounced]);
 
   const { data: users } = useAxios((signal) => userApi.getAll(signal), [], {
     initialData: [],
@@ -38,6 +49,7 @@ export default function PostListPage() {
 
   const params = { _page: page, _limit: LIMIT };
   if (userId) params.userId = userId;
+  if (q) params.q = q;
 
   const {
     data: posts,
@@ -46,7 +58,7 @@ export default function PostListPage() {
     loading,
     error,
     refetch,
-  } = useAxios((signal) => postApi.getAll(params, signal), [page, userId], {
+  } = useAxios((signal) => postApi.getAll(params, signal), [page, userId, q], {
     initialData: [],
   });
 
@@ -83,6 +95,21 @@ export default function PostListPage() {
       </div>
 
       <Row className="mb-3 g-2">
+        <Col md={6}>
+          <InputGroup>
+            <InputGroup.Text>🔍</InputGroup.Text>
+            <Form.Control
+              placeholder="Tìm bài viết..."
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+            />
+            {keyword && (
+              <Button variant="outline-secondary" onClick={() => setKeyword('')}>
+                ✕
+              </Button>
+            )}
+          </InputGroup>
+        </Col>
         <Col md={4}>
           <Form.Select
             value={userId}
