@@ -35,7 +35,6 @@ export default function PostListPage() {
     setSearchParams(merged);
   };
 
-  // NC9: ô tìm kiếm + debounce 500ms → ghi q lên URL
   const [keyword, setKeyword] = useState(q);
   const debounced = useDebounce(keyword.trim(), 500);
   useEffect(() => {
@@ -62,25 +61,66 @@ export default function PostListPage() {
     initialData: [],
   });
 
-  const total = Number(headers['x-total-count'] ?? posts.length);
+  const [removed, setRemoved] = useState(0);
+  useEffect(() => setRemoved(0), [page, userId, q]);
+  const total = Math.max(
+    0,
+    Number(headers['x-total-count'] ?? posts.length) - removed
+  );
   const totalPages = Math.max(1, Math.ceil(total / LIMIT));
   const authorName = (id) => users.find((u) => u.id === id)?.name ?? `User ${id}`;
 
+  // NC10.2: xóa 1 bài – optimistic update + rollback
   const [toDelete, setToDelete] = useState(null);
-  const [deleting, setDeleting] = useState(false);
   const handleDeleteOne = async () => {
-    setDeleting(true);
+    const post = toDelete;
+    setToDelete(null);
+    const backup = posts;
+    setPosts((prev) => prev.filter((p) => p.id !== post.id));
+    setRemoved((n) => n + 1);
     try {
-      const res = await postApi.remove(toDelete.id);
-      setPosts((prev) => prev.filter((p) => p.id !== toDelete.id));
-      notify('success', `DELETE /posts/${toDelete.id} → ${res.status}`);
-      refetch();
+      const res = await postApi.remove(post.id);
+      notify('success', `DELETE /posts/${post.id} → ${res.status}`);
     } catch (err) {
-      notify('danger', 'Xóa thất bại: ' + (err.userMessage ?? err.message));
-    } finally {
-      setDeleting(false);
-      setToDelete(null);
+      setPosts(backup);
+      setRemoved((n) => n - 1);
+      notify(
+        'danger',
+        `Xóa thất bại (${err.userMessage ?? err.message}) – đã khôi phục`
+      );
     }
+  };
+
+  // NC10.1: xóa hàng loạt – Promise.allSettled
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [confirmBulk, setConfirmBulk] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+  useEffect(() => setSelectedIds([]), [page, userId, q]);
+
+  const toggleSelect = (id) =>
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  const allChecked =
+    posts.length > 0 && posts.every((p) => selectedIds.includes(p.id));
+  const toggleAll = () =>
+    setSelectedIds(allChecked ? [] : posts.map((p) => p.id));
+
+  const handleDeleteMany = async () => {
+    setBulkDeleting(true);
+    const results = await Promise.allSettled(
+      selectedIds.map((id) => postApi.remove(id))
+    );
+    const okIds = selectedIds.filter((_, i) => results[i].status === 'fulfilled');
+    setPosts((prev) => prev.filter((p) => !okIds.includes(p.id)));
+    setRemoved((n) => n + okIds.length);
+    setSelectedIds((prev) => prev.filter((id) => !okIds.includes(id)));
+    notify(
+      okIds.length === selectedIds.length ? 'success' : 'warning',
+      `Xóa thành công ${okIds.length}/${selectedIds.length} bài viết`
+    );
+    setBulkDeleting(false);
+    setConfirmBulk(false);
   };
 
   return (
@@ -89,9 +129,19 @@ export default function PostListPage() {
         <h2 className="m-0">
           Bài viết <Badge bg="secondary">{total}</Badge>
         </h2>
-        <Button as={Link} to="/posts/new">
-          + Tạo bài viết
-        </Button>
+        <div>
+          <Button
+            variant="danger"
+            className="me-2"
+            disabled={!selectedIds.length}
+            onClick={() => setConfirmBulk(true)}
+          >
+            Xóa đã chọn ({selectedIds.length})
+          </Button>
+          <Button as={Link} to="/posts/new">
+            + Tạo bài viết
+          </Button>
+        </div>
       </div>
 
       <Row className="mb-3 g-2">
@@ -133,6 +183,13 @@ export default function PostListPage() {
       <Table striped bordered hover responsive className={loading ? 'opacity-50' : ''}>
         <thead>
           <tr>
+            <th style={{ width: 40 }}>
+              <Form.Check
+                checked={allChecked}
+                onChange={toggleAll}
+                aria-label="Chọn tất cả"
+              />
+            </th>
             <th style={{ width: 60 }}>#</th>
             <th>Tiêu đề</th>
             <th style={{ width: 170 }}>Tác giả</th>
@@ -142,6 +199,13 @@ export default function PostListPage() {
         <tbody>
           {posts.map((p) => (
             <tr key={p.id}>
+              <td>
+                <Form.Check
+                  checked={selectedIds.includes(p.id)}
+                  onChange={() => toggleSelect(p.id)}
+                  aria-label={`Chọn ${p.id}`}
+                />
+              </td>
               <td>{p.id}</td>
               <td>
                 <Link to={`/posts/${p.id}`}>{p.title}</Link>
@@ -178,7 +242,7 @@ export default function PostListPage() {
           ))}
           {!loading && posts.length === 0 && (
             <tr>
-              <td colSpan={4} className="text-center text-muted">
+              <td colSpan={5} className="text-center text-muted">
                 Không có bài viết phù hợp
               </td>
             </tr>
@@ -215,9 +279,18 @@ export default function PostListPage() {
           </>
         }
         confirmText="Xóa"
-        loading={deleting}
         onConfirm={handleDeleteOne}
         onCancel={() => setToDelete(null)}
+      />
+
+      <ConfirmModal
+        show={confirmBulk}
+        title="Xóa nhiều bài viết"
+        message={`Xóa ${selectedIds.length} bài viết đã chọn (#${selectedIds.join(', #')})?`}
+        confirmText="Xóa tất cả"
+        loading={bulkDeleting}
+        onConfirm={handleDeleteMany}
+        onCancel={() => setConfirmBulk(false)}
       />
     </>
   );
