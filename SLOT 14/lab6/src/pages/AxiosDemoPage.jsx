@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import postApi from '../api/postApi';
-import Alert from 'react-bootstrap/Alert';
-import Badge from 'react-bootstrap/Badge';
-import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import Col from 'react-bootstrap/Col';
+import Spinner from 'react-bootstrap/Spinner';
+import Alert from 'react-bootstrap/Alert';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import Spinner from 'react-bootstrap/Spinner';
+import Col from 'react-bootstrap/Col';
+import Badge from 'react-bootstrap/Badge';
+import Button from 'react-bootstrap/Button';
+import { Link } from 'react-router-dom';
+import postApi from '../api/postApi';
 
-const AxiosDemo = () => {
+export default function AxiosDemoPage() {
   const [postId, setPostId] = useState(1);
   const [data, setData] = useState(null);
   const [meta, setMeta] = useState(null);
@@ -99,6 +100,7 @@ const AxiosDemo = () => {
               {data.title}
             </Card.Title>
             <Card.Text style={{ whiteSpace: 'pre-line' }}>{data.body}</Card.Text>
+            <Link to={`/posts/${data.id}`}>Xem chi tiết & bình luận →</Link>
           </Card.Body>
           {meta && (
             <Card.Footer className="small text-muted">
@@ -110,6 +112,4 @@ const AxiosDemo = () => {
       )}
     </>
   );
-};
-
-export default AxiosDemo;
+}

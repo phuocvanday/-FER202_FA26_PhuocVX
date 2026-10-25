@@ -1,0 +1,36 @@
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import PostListCard from '../components/http/PostListCard';
+import CreatePostCard from '../components/http/CreatePostCard';
+import UpdatePostCard from '../components/http/UpdatePostCard';
+import PatchPostCard from '../components/http/PatchPostCard';
+import DeletePostCard from '../components/http/DeletePostCard';
+import RequestConfigCard from '../components/http/RequestConfigCard';
+
+export default function HttpRequestsPage() {
+  return (
+    <>
+      <h2 className="mb-3">HTTP Requests với axios</h2>
+      <Row xs={1} lg={2} className="g-4">
+        <Col>
+          <PostListCard />
+        </Col>
+        <Col>
+          <CreatePostCard />
+        </Col>
+        <Col>
+          <UpdatePostCard />
+        </Col>
+        <Col>
+          <PatchPostCard />
+        </Col>
+        <Col>
+          <DeletePostCard />
+        </Col>
+        <Col>
+          <RequestConfigCard />
+        </Col>
+      </Row>
+    </>
+  );
+}
