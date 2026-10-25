@@ -2,98 +2,113 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import postApi from '../api/postApi';
 import Alert from 'react-bootstrap/Alert';
+import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
 import Spinner from 'react-bootstrap/Spinner';
 
 const AxiosDemo = () => {
   const [postId, setPostId] = useState(1);
   const [data, setData] = useState(null);
+  const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // 1. Mỗi lần effect chạy (postId đổi) tạo một controller MỚI
     const controller = new AbortController();
 
     const fetchPost = async () => {
       setLoading(true);
       setError(null);
       try {
-        // 2. Truyền signal cho axios
         const res = await postApi.getById(postId, controller.signal);
         setData(res.data);
+        setMeta({
+          status: res.status,
+          duration: res.duration,
+          contentType: res.headers['content-type'],
+        });
       } catch (err) {
-        // 3. Request bị hủy → không phải lỗi, bỏ qua
         if (axios.isCancel(err)) return;
         setData(null);
         setError(err.userMessage ?? err.message);
       } finally {
-        // Request đã bị hủy thì request mới đang chạy → không tắt loading
         if (!controller.signal.aborted) setLoading(false);
       }
     };
 
     fetchPost();
-
-    // 4. Cleanup: chạy TRƯỚC lần effect kế tiếp và khi unmount → hủy request cũ
     return () => controller.abort();
   }, [postId]);
 
   return (
-    <section>
-      <h2 className="h4 mb-1">Axios Demo – chọn Post ID (AbortController)</h2>
-      <p className="text-muted">
-        Đổi id → hủy request cũ bằng <code>AbortController</code>, chỉ hiện bài của id cuối.
-      </p>
+    <>
+      <h1 className="mb-3">
+        Axios Demo <Badge bg="primary">react-bootstrap</Badge>
+      </h1>
 
-      <Form className="d-flex flex-wrap align-items-end gap-2 mb-3">
-        <Form.Group controlId="post-id">
-          <Form.Label className="mb-1">Post ID (1–100)</Form.Label>
+      <Row className="mb-3 g-2 align-items-end">
+        <Col xs="auto">
+          <Form.Label htmlFor="postId">
+            Post ID (1–100, thử 999 để xem lỗi 404)
+          </Form.Label>
           <Form.Control
+            id="postId"
             type="number"
             min={1}
-            max={100}
             value={postId}
             onChange={(e) => setPostId(Number(e.target.value) || 1)}
-            style={{ width: 120 }}
+            style={{ width: 160 }}
           />
-        </Form.Group>
-        <Button
-          variant="outline-secondary"
-          onClick={() => setPostId((id) => Math.max(1, id - 1))}
-        >
-          ‹ Trước
-        </Button>
-        <Button
-          variant="outline-secondary"
-          onClick={() => setPostId((id) => Math.min(100, id + 1))}
-        >
-          Sau ›
-        </Button>
-      </Form>
+        </Col>
+        <Col xs="auto">
+          <Button
+            variant="outline-secondary"
+            onClick={() => setPostId((id) => Math.max(1, id - 1))}
+          >
+            ‹ Trước
+          </Button>{' '}
+          <Button
+            variant="outline-secondary"
+            onClick={() => setPostId((id) => id + 1)}
+          >
+            Sau ›
+          </Button>
+        </Col>
+      </Row>
 
       {loading && (
-        <div className="d-flex align-items-center gap-2">
-          <Spinner animation="border" size="sm" />
-          <span>Loading...</span>
+        <div className="text-center py-5">
+          <Spinner animation="border" />
+          <p className="mt-2">Loading...</p>
         </div>
       )}
 
-      {!loading && error && <Alert variant="danger">Error: {error}</Alert>}
+      {!loading && error && <Alert variant="danger">❌ Error: {error}</Alert>}
 
       {!loading && data && (
-        <Card>
+        <Card className="shadow-sm">
+          <Card.Header>
+            Post #{data.id} · userId {data.userId}
+          </Card.Header>
           <Card.Body>
-            <Card.Title as="h3" className="h5">
-              #{data.id} – {data.title}
+            <Card.Title as="h2" className="fs-4 text-capitalize">
+              {data.title}
             </Card.Title>
-            <Card.Text className="mb-0">{data.body}</Card.Text>
+            <Card.Text style={{ whiteSpace: 'pre-line' }}>{data.body}</Card.Text>
           </Card.Body>
+          {meta && (
+            <Card.Footer className="small text-muted">
+              Status <Badge bg="success">{meta.status}</Badge> · {meta.duration}{' '}
+              ms · {meta.contentType}
+            </Card.Footer>
+          )}
         </Card>
       )}
-    </section>
+    </>
   );
 };
 
